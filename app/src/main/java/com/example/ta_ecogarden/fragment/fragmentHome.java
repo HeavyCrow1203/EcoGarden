@@ -170,9 +170,10 @@ public class fragmentHome extends Fragment {
 
                         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getActivity().getApplicationContext(), "CH1")
                                 .setSmallIcon(R.drawable.logo1)
-                                .setContentText("Sistem Melakukan Penyiraman. (Suhu : "+bacasuhu+"°C , " +
+                                .setContentText("Sistem melakukan penyiraman ("+keterangan+"). Tap untuk melihat aplikasi")
+                                /**.setContentText("Sistem Melakukan Penyiraman. (Suhu : "+bacasuhu+"°C , " +
                                         "Kelembaban Tanah : "+kelembaban_tanah+" %, \nLama Penyiraman : "+Float.parseFloat(durasi)+" detik. " +
-                                        "\nTap Untuk Membuka Aplikasi")
+                                        "\nTap Untuk Membuka Aplikasi")**/
                                 .setContentTitle("Pemberitahuan Sistem Melakukan Penyiraman")
                                 .setAutoCancel(true)
                                 .setSound(defaultSoundUri)
