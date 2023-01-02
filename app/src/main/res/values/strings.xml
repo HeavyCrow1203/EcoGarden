@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">TA_Eco Garden</string>
+    <string name="tombol_masuk">Masuk</string>
+    <string name="tombol_daftar">Daftar</string>
+    <string name="hint">Cari Data Berdasarkan Tanggal</string>
+    <string name="text_ganti_pass">Lupa Kata Sandi?</string>
+    <string name="atau">Atau</string>
+    <string name="title">Selamat datang di Eco Garden</string>
+    <string name="title2">Daftar dan temukan mudahnya</string>
+    <string name="title3">merawat tanaman dari jarak jauh</string>
+    <string name="title_ganti_pass">Masukkan Email yang terdaftar untuk perubahan kata sandi</string>
+    <string name="judul_grafik_suhu">Grafik Suhu</string>
+    <string name="judul_grafik_kelembaban_tanah">Grafik Kelembaban Tanah</string>
+    <string name="judul_grafik_lama_siram">Grafik Lama Siram</string>
+</resources>
