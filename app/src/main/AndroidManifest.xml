@@ -4,10 +4,7 @@
 
     <uses-permission-sdk-23 android:name="android.permission.ACCESS_NOTIFICATION_POLICY"/>
     <uses-permission-sdk-23 android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission-sdk-23 android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-
     <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-permission-sdk-23 android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -15,7 +12,6 @@
     <uses-permission-sdk-23 android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
     <uses-permission android:name="android.permission.READ_CALENDAR" />
-
 
     <application
         android:allowBackup="true"
@@ -27,12 +23,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TA_EcoGarden"
         tools:targetApi="31" >
+
         <activity
             android:name=".MainActivity"
             android:exported="false" >
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
+            <intent-filter>
+                <action android:name="android.intent.action.DISPLAY_NOTIFICATION" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".Lupa_Passwd"
@@ -64,7 +64,6 @@
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <action android:name="android.intent.action.DISPLAY_NOTIFICATION" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 

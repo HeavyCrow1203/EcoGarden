@@ -1,6 +1,15 @@
 package com.example.ta_ecogarden.fragment;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -12,10 +21,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.ta_ecogarden.MainActivity;
 import com.example.ta_ecogarden.R;
 import com.example.ta_ecogarden.database.getData;
 import com.example.ta_ecogarden.etc.AdapterListData;
@@ -53,6 +64,7 @@ public class fragmentDataLogger extends Fragment {
     AdapterListData adapter;
     private static final int STORAGE_PERMISSION_CODE = 101;
     ValueEventListener eventListener;
+    File file;
 
     @Nullable
     @Override
@@ -78,12 +90,11 @@ public class fragmentDataLogger extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Toast.makeText(getActivity().getApplicationContext(), "Gagal Memuat Data",
+                        Toast.LENGTH_SHORT).show();
             }
         };
         databaseReference.addValueEventListener(eventListener);
-
-
         return view;
     }
 
@@ -205,13 +216,19 @@ public class fragmentDataLogger extends Fragment {
             cell.setCellStyle(cellStyle1);
         }
 
-        File file = new File(getActivity().getExternalFilesDir(null), "/File "+dateFile()+".xls");
+        String fileName = "/File "+dateFile()+".xls";
+        file = new File(getActivity().getExternalFilesDir(null), fileName);
         FileOutputStream outputStream = null;
 
         try {
             outputStream=new FileOutputStream(file);
             wb.write(outputStream);
-            Toast.makeText(getActivity().getApplicationContext(),"File tersimpan di direktori",Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity().getApplicationContext(),"File tersimpan di direktori "
+                    +getActivity().getExternalFilesDir(null)+fileName,Toast.LENGTH_LONG).show();
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.setData(Uri.fromFile(file));
+            startActivityForResult(intent, 1);
 
         } catch (java.io.IOException e) {
             e.printStackTrace();
@@ -226,7 +243,7 @@ public class fragmentDataLogger extends Fragment {
     }
 
     private String dateFile () {
-        DateFormat dateFormat = new SimpleDateFormat("dd MMMM YYYY");
+        DateFormat dateFormat = new SimpleDateFormat("dd MMMM YYYY HH:MM:ss");
         Date date = new Date();
         String datefile = dateFormat.format(date);
         return  datefile;

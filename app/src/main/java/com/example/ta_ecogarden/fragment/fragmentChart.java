@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,6 +13,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,17 +26,24 @@ import com.example.ta_ecogarden.marker_chart.Marker_Chart_Kelembaban;
 import com.example.ta_ecogarden.marker_chart.Marker_Chart_Lama_Siram;
 import com.example.ta_ecogarden.marker_chart.Marker_Chart_Suhu;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.IMarker;
+import com.github.mikephil.charting.components.MarkerView;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.github.mikephil.charting.utils.MPPointF;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -46,15 +56,12 @@ public class fragmentChart extends Fragment {
     LineDataSet lineDataSet1, lineDataSet2, lineDataSet3;
     ArrayList<ILineDataSet> iLineDataSets1, iLineDataSets2, iLineDataSets3;
     LineData lineData;
-    List<String> label = new ArrayList<>();
+    ArrayList<String> label = new ArrayList<>();
     DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Data");
     DatePickerDialog date;
     SimpleDateFormat dateFormat;
     Button filter_chart;
     EditText tanggal;
-    Marker_Chart_Suhu mark_chart;
-    Marker_Chart_Kelembaban mark_chart1;
-    Marker_Chart_Lama_Siram mark_chart2;
     getData dataku;
 
     @SuppressLint("MissingInflatedId")
@@ -92,10 +99,6 @@ public class fragmentChart extends Fragment {
         });
 
         dateFormat = new SimpleDateFormat("d MMMM yyyy", Locale.US);
-        mark_chart = new Marker_Chart_Suhu(getActivity().getApplicationContext(), R.layout.marker_chart_suhu);
-        mark_chart1 = new Marker_Chart_Kelembaban(getActivity().getApplicationContext(), R.layout.marker_chart_kelembaban);
-        mark_chart2 = new Marker_Chart_Lama_Siram(getActivity().getApplicationContext(), R.layout.custom_mark_chart);
-
         return view;
     }
 
@@ -143,12 +146,12 @@ public class fragmentChart extends Fragment {
                             }).create();
                     dialog.show();
                 }
-
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Toast.makeText(getActivity().getApplicationContext(), "Gagal Memuat Data",
+                        Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -186,19 +189,18 @@ public class fragmentChart extends Fragment {
                     display_chart_kelembaban();
                     lineDataSet3.setValues(entries3);
                     display_chart_durasi();
-
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Toast.makeText(getActivity().getApplicationContext(), "Gagal Memuat Data",
+                        Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void display_chart_suhu() {
-        line_chart_suhu.setMarker(mark_chart);
         lineDataSet1.setLabel("Suhu (°C)");
         lineDataSet1.setColor(Color.BLUE);
         lineDataSet1.setCircleRadius(2f);
@@ -217,10 +219,13 @@ public class fragmentChart extends Fragment {
         line_chart_suhu.getLegend().setDrawInside(false);
         line_chart_suhu.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
         line_chart_suhu.getDescription().setEnabled(false);
+        line_chart_suhu.setMarker(new Marker_Chart_Suhu(getActivity().getApplicationContext(),
+                R.layout.marker_chart_suhu, label));
     }
 
     private void display_chart_kelembaban() {
-        line_chart_kelembaban.setMarker(mark_chart1);
+        line_chart_kelembaban.setMarker(new Marker_Chart_Kelembaban(getActivity().getApplicationContext(),
+                R.layout.marker_chart_kelembaban, label));
         lineDataSet2.setLabel("Kelembaban Tanah (%)");
         lineDataSet2.setColor(Color.GREEN);
         lineDataSet2.setCircleRadius(2f);
@@ -242,7 +247,6 @@ public class fragmentChart extends Fragment {
     }
 
     private void display_chart_durasi() {
-        line_chart_siram.setMarker(mark_chart2);
         lineDataSet3.setLabel("Lama Siram (detik)");
         lineDataSet3.setColor(Color.RED);
         lineDataSet3.setCircleRadius(2f);
@@ -261,6 +265,8 @@ public class fragmentChart extends Fragment {
         line_chart_siram.getLegend().setDrawInside(false);
         line_chart_siram.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
         line_chart_siram.getDescription().setEnabled(false);
+        line_chart_siram.setMarker(new Marker_Chart_Lama_Siram(getActivity().getApplicationContext(),
+                R.layout.custom_mark_chart, label));
     }
 
 

@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -146,10 +147,10 @@ public class fragmentHome extends Fragment {
                      animator.start();**/
 
                     String kelembaban_tanah = snapshot1.child("Kelembaban_Tanah").getValue().toString();
-                    float nilai_tanah = Float.parseFloat(kelembaban_tanah)*10;
+                    float nilai_tanah = Float.parseFloat(kelembaban_tanah)*100;
                     int progress = Math.round(nilai_tanah);
                     gSoil.setProgress(progress);
-                    gSoil.setMax(100*10);
+                    gSoil.setMax(10000);
                     vSoil.setText(kelembaban_tanah+" %");
                     /**ObjectAnimator animator2 = ObjectAnimator.ofInt(gSoil, "progress", 0, progress);
                      animator2.setDuration(2000);
@@ -161,7 +162,7 @@ public class fragmentHome extends Fragment {
 
                     output.setText(keterangan +" ("+durasi+" detik)");
 
-                    if (Float.parseFloat(durasi) > 0.00) {
+                    if (Float.parseFloat(durasi) > 1.00) {
                         Intent intent = new Intent(getActivity().getApplicationContext(), MainActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
@@ -195,7 +196,8 @@ public class fragmentHome extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Toast.makeText(getActivity().getApplicationContext(), "Gagal Memuat Data",
+                        Toast.LENGTH_SHORT).show();
             }
         });
     }

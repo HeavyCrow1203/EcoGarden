@@ -2,6 +2,7 @@ package com.example.ta_ecogarden.marker_chart;
 
 import android.content.Context;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -16,17 +17,23 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+
 public class Marker_Chart_Suhu extends MarkerView {
     TextView tanggal_value, waktu_value, suhu;
     DatabaseReference reference;
+    ArrayList<String> label_waktu = new ArrayList<>();
+    String waktu;
+
     /**
      * Constructor. Sets up the MarkerView with a custom layout resource.
      *
      * @param context
      * @param layoutResource the layout resource to use for the MarkerView
      */
-    public Marker_Chart_Suhu(Context context, int layoutResource) {
+    public Marker_Chart_Suhu(Context context, int layoutResource, ArrayList<String> xLabel) {
         super(context, layoutResource);
+        label_waktu = xLabel;
 
         suhu = findViewById(R.id.txtInfo);
         tanggal_value= findViewById(R.id.txtTitle);
@@ -37,27 +44,29 @@ public class Marker_Chart_Suhu extends MarkerView {
 
     @Override
     public void refreshContent(Entry e, Highlight highlight) {
-
-        reference.orderByChild("Suhu").equalTo(e.getY()).addValueEventListener(new ValueEventListener() {
+        String waktu = label_waktu.get((int) e.getX());
+        String nilai_suhu = String.valueOf(e.getY());
+        reference.orderByChild("Waktu").equalTo(waktu).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.hasChildren()) {
+                    int i = -1;
                     for (DataSnapshot snapshot1 : snapshot.getChildren()) {
-                        String tanggal1 = snapshot1.child("Tanggal").getValue().toString();
-                        waktu_value.setText(snapshot1.child("Waktu").getValue().toString());
-                        tanggal_value.setText(tanggal1);
+                        i = i+1;
+                        String date_chart = snapshot1.child("Tanggal").getValue().toString();
+                        suhu.setText("kelembaban Tanah : "+nilai_suhu+" °C");
+                        waktu_value.setText(waktu);
+                        tanggal_value.setText(date_chart);
                     }
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Toast.makeText(getContext(), "Gagal Memuat Data", Toast.LENGTH_SHORT).show();
             }
-
         });
 
-        suhu.setText("Suhu : "+e.getY()+" °C");
         super.refreshContent(e, highlight);
     }
 

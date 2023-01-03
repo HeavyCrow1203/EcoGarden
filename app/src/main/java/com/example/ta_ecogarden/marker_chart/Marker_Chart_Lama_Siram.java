@@ -2,6 +2,7 @@ package com.example.ta_ecogarden.marker_chart;
 
 import android.content.Context;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -16,19 +17,25 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+
 public class Marker_Chart_Lama_Siram extends MarkerView {
-    TextView tanggal_value, waktu_value, durasi;
+    TextView tanggal_value, waktu_value, lama_siram;
     DatabaseReference reference;
+    ArrayList<String> label_waktu = new ArrayList<>();
+    String waktu;
+
     /**
      * Constructor. Sets up the MarkerView with a custom layout resource.
      *
      * @param context
      * @param layoutResource the layout resource to use for the MarkerView
      */
-    public Marker_Chart_Lama_Siram(Context context, int layoutResource) {
+    public Marker_Chart_Lama_Siram(Context context, int layoutResource, ArrayList<String> xLabel) {
         super(context, layoutResource);
+        label_waktu = xLabel;
 
-        durasi = findViewById(R.id.txtInfo);
+        lama_siram = findViewById(R.id.txtInfo);
         tanggal_value= findViewById(R.id.txtTitle);
         waktu_value = findViewById(R.id.txtWaktu);
 
@@ -37,29 +44,29 @@ public class Marker_Chart_Lama_Siram extends MarkerView {
 
     @Override
     public void refreshContent(Entry e, Highlight highlight) {
-
-        reference.orderByChild("Durasi").equalTo(e.getY()).addValueEventListener(new ValueEventListener() {
+        String waktu = label_waktu.get((int) e.getX());
+        String nilai_lama_siram = String.valueOf(e.getY());
+        reference.orderByChild("Waktu").equalTo(waktu).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.hasChildren()) {
                     int i = -1;
                     for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                         i = i+1;
-                        String tanggal1 = snapshot1.child("Tanggal").getValue().toString();
-                        waktu_value.setText(snapshot1.child("Waktu").getValue().toString());
-                        tanggal_value.setText(tanggal1);
+                        String date_chart = snapshot1.child("Tanggal").getValue().toString();
+                        lama_siram.setText("Durasi Siram : "+nilai_lama_siram+" s");
+                        waktu_value.setText(waktu);
+                        tanggal_value.setText(date_chart);
                     }
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Toast.makeText(getContext(), "Gagal Memuat Data", Toast.LENGTH_SHORT).show();
             }
-
         });
 
-        durasi.setText("Durasi : "+e.getY()+" s");
         super.refreshContent(e, highlight);
     }
 
