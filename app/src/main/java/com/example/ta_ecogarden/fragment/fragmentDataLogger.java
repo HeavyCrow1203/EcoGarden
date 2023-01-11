@@ -223,12 +223,32 @@ public class fragmentDataLogger extends Fragment {
         try {
             outputStream=new FileOutputStream(file);
             wb.write(outputStream);
-            Toast.makeText(getActivity().getApplicationContext(),"File tersimpan di direktori "
-                    +getActivity().getExternalFilesDir(null)+fileName,Toast.LENGTH_LONG).show();
-            Intent intent = new Intent();
-            intent.setAction(Intent.ACTION_VIEW);
-            intent.setData(Uri.fromFile(file));
-            startActivityForResult(intent, 1);
+            /**Toast.makeText(getActivity().getApplicationContext(),"File tersimpan di direktori "
+                    +getActivity().getExternalFilesDir(null)+fileName,Toast.LENGTH_LONG).show();**/
+
+            Intent intent = new Intent(getActivity().getApplicationContext(), MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+            PendingIntent pendingIntent = PendingIntent.getActivity(getActivity().getApplicationContext(),0,intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getActivity().getApplicationContext(), "CH1")
+                    .setSmallIcon(R.drawable.logo1)
+                    .setContentText("File disimpan di folder "+getActivity().getExternalFilesDir(null)+fileName)
+                    .setContentTitle("Pemberitahuan Sistem")
+                    .setAutoCancel(true)
+                    .setSound(defaultSoundUri)
+                    .setContentIntent(pendingIntent)
+                    .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+
+            NotificationManager notificationManager = (NotificationManager) getActivity().getApplicationContext().
+                    getSystemService(Context.NOTIFICATION_SERVICE);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES. O) {
+                NotificationChannel channel = new NotificationChannel("CH1", "Notifikasi",NotificationManager.IMPORTANCE_DEFAULT);
+                notificationManager.createNotificationChannel(channel);
+            }
+            notificationManager.notify(1, notificationBuilder.build());
 
         } catch (java.io.IOException e) {
             e.printStackTrace();

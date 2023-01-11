@@ -188,7 +188,6 @@ public class fragmentHome extends Fragment {
                             NotificationChannel channel = new NotificationChannel("CH1", "Notifikasi",NotificationManager.IMPORTANCE_DEFAULT);
                             notificationManager.createNotificationChannel(channel);
                         }
-
                         notificationManager.notify(1, notificationBuilder.build());
                     }
                 }
