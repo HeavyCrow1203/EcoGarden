@@ -1,10 +1,13 @@
 package com.example.ta_ecogarden.fragment;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
@@ -21,7 +24,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -71,6 +76,7 @@ public class fragmentDataLogger extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_data_logger, container, false);
         setHasOptionsMenu(true);
+        checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, STORAGE_PERMISSION_CODE);
         databaseReference = FirebaseDatabase.getInstance().getReference("Data");
         rv_data = view.findViewById(R.id.list_data_2);
         list_view();
@@ -96,6 +102,26 @@ public class fragmentDataLogger extends Fragment {
         };
         databaseReference.addValueEventListener(eventListener);
         return view;
+    }
+
+    public void checkPermission(String permission, int requestCode) {
+        if (ContextCompat.checkSelfPermission(getActivity().getApplicationContext(), permission) == PackageManager.PERMISSION_DENIED) {
+            requestPermissions(new String[]{permission}, requestCode);
+        } else {
+            Toast.makeText(getActivity().getApplicationContext(), "Permission already granted", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == STORAGE_PERMISSION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                Toast.makeText(getActivity().getApplicationContext(), "Storage Permission Granted", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getActivity().getApplicationContext(), "Storage Permission Denied", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     // susunan data berdasarkan tanggal terdahulu
@@ -216,15 +242,13 @@ public class fragmentDataLogger extends Fragment {
             cell.setCellStyle(cellStyle1);
         }
 
-        String fileName = "/File "+dateFile()+".xls";
-        file = new File(getActivity().getExternalFilesDir(null), fileName);
+        String fileName = "File "+dateFile()+".xls";
+        file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
         FileOutputStream outputStream = null;
 
         try {
             outputStream=new FileOutputStream(file);
             wb.write(outputStream);
-            /**Toast.makeText(getActivity().getApplicationContext(),"File tersimpan di direktori "
-                    +getActivity().getExternalFilesDir(null)+fileName,Toast.LENGTH_LONG).show();**/
 
             Intent intent = new Intent(getActivity().getApplicationContext(), MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -234,7 +258,7 @@ public class fragmentDataLogger extends Fragment {
 
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getActivity().getApplicationContext(), "CH1")
                     .setSmallIcon(R.drawable.logo1)
-                    .setContentText("File disimpan di folder "+getActivity().getExternalFilesDir(null)+fileName)
+                    .setContentText(fileName+" berhasil disimpan ke folder Downloads")
                     .setContentTitle("Pemberitahuan Sistem")
                     .setAutoCancel(true)
                     .setSound(defaultSoundUri)
