@@ -162,7 +162,7 @@ public class fragmentHome extends Fragment {
 
                     output.setText(keterangan +" ("+durasi+" detik)");
 
-                    if (Float.parseFloat(durasi) > 1.00) {
+                    /**if (Float.parseFloat(durasi) > 1.00) {
                         Intent intent = new Intent(getActivity().getApplicationContext(), MainActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
@@ -172,9 +172,9 @@ public class fragmentHome extends Fragment {
                         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getActivity().getApplicationContext(), "CH1")
                                 .setSmallIcon(R.drawable.logo1)
                                 .setContentText("Sistem melakukan penyiraman ("+keterangan+"). Tap untuk melihat aplikasi")
-                                /**.setContentText("Sistem Melakukan Penyiraman. (Suhu : "+bacasuhu+"°C , " +
+                                /****.setContentText("Sistem Melakukan Penyiraman. (Suhu : "+bacasuhu+"°C , " +
                                         "Kelembaban Tanah : "+kelembaban_tanah+" %, \nLama Penyiraman : "+Float.parseFloat(durasi)+" detik. " +
-                                        "\nTap Untuk Membuka Aplikasi")**/
+                                        "\nTap Untuk Membuka Aplikasi")****
                                 .setContentTitle("Pemberitahuan Sistem Melakukan Penyiraman")
                                 .setAutoCancel(true)
                                 .setSound(defaultSoundUri)
@@ -189,7 +189,7 @@ public class fragmentHome extends Fragment {
                             notificationManager.createNotificationChannel(channel);
                         }
                         notificationManager.notify(1, notificationBuilder.build());
-                    }
+                    }**/
                 }
             }
 

@@ -250,10 +250,10 @@ public class fragmentDataLogger extends Fragment {
             outputStream=new FileOutputStream(file);
             wb.write(outputStream);
 
-            Intent intent = new Intent(getActivity().getApplicationContext(), MainActivity.class);
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS))));
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-            PendingIntent pendingIntent = PendingIntent.getActivity(getActivity().getApplicationContext(),0,intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent pendingIntent = PendingIntent.getActivity(getActivity().getApplicationContext(),STORAGE_PERMISSION_CODE,intent, PendingIntent.FLAG_UPDATE_CURRENT);
             Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getActivity().getApplicationContext(), "CH1")
