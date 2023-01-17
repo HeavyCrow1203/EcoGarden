@@ -1,9 +1,11 @@
 package com.example.ta_ecogarden.fragment;
 
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -40,6 +42,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 public class fragmentHome extends Fragment {
     View view;
@@ -51,7 +54,8 @@ public class fragmentHome extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_home, container, false);
         tanggal = view.findViewById(R.id.tanggaldanwaktu);
         email = view.findViewById(R.id.txtEmail);
@@ -136,10 +140,10 @@ public class fragmentHome extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                     String bacasuhu = snapshot1.child("Suhu").getValue().toString();
-                    float nilaisuhu = Float.parseFloat(bacasuhu)*10;
+                    float nilaisuhu = Float.parseFloat(bacasuhu)*100;
                     int suhu = Math.round(nilaisuhu);
                     gTemp.setProgress(suhu);
-                    gTemp.setMax(100*10);
+                    gTemp.setMax(10000);
                     vTemp.setText(bacasuhu+" °C");
                     /**ObjectAnimator animator = ObjectAnimator.ofInt(gTemp, "progress", 0, suhu);
                      animator.setDuration(2000);
@@ -162,34 +166,44 @@ public class fragmentHome extends Fragment {
 
                     output.setText(keterangan +" ("+durasi+" detik)");
 
-                    /**if (Float.parseFloat(durasi) > 1.00) {
-                        Intent intent = new Intent(getActivity().getApplicationContext(), MainActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    ActivityManager am = (ActivityManager) getActivity().getSystemService(Context.ACTIVITY_SERVICE);
 
-                        PendingIntent pendingIntent = PendingIntent.getActivity(getActivity().getApplicationContext(),0,intent, PendingIntent.FLAG_UPDATE_CURRENT);
-                        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                    List<ActivityManager.RunningTaskInfo> taskInfos = am.getRunningTasks(1);
+                    ComponentName componentInfo = taskInfos.get(0).topActivity;
+                    if (componentInfo.getPackageName().equalsIgnoreCase(getActivity().getApplicationContext().getPackageName())) {
+                        return;
+                    } else {
+                        if (Float.parseFloat(durasi) >= 1.00) {
+                            Intent intent = new Intent(getActivity().getApplicationContext(), MainActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-                        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getActivity().getApplicationContext(), "CH1")
-                                .setSmallIcon(R.drawable.logo1)
-                                .setContentText("Sistem melakukan penyiraman ("+keterangan+"). Tap untuk melihat aplikasi")
-                                /****.setContentText("Sistem Melakukan Penyiraman. (Suhu : "+bacasuhu+"°C , " +
-                                        "Kelembaban Tanah : "+kelembaban_tanah+" %, \nLama Penyiraman : "+Float.parseFloat(durasi)+" detik. " +
-                                        "\nTap Untuk Membuka Aplikasi")****
-                                .setContentTitle("Pemberitahuan Sistem Melakukan Penyiraman")
-                                .setAutoCancel(true)
-                                .setSound(defaultSoundUri)
-                                .setContentIntent(pendingIntent)
-                                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+                            PendingIntent pendingIntent = PendingIntent.getActivity(getActivity().getApplicationContext(),
+                                    0,intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                            Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
-                        NotificationManager notificationManager = (NotificationManager) getActivity().getApplicationContext().
-                                getSystemService(Context.NOTIFICATION_SERVICE);
+                            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder
+                                    (getActivity().getApplicationContext(), "CH1")
+                                    .setSmallIcon(R.drawable.logo1)
+                                    .setContentText("Sistem Melakukan Penyiraman. (Suhu : "+bacasuhu+"°C , " +
+                                            "Kelembaban Tanah : "+kelembaban_tanah+" %, \nLama Penyiraman : "
+                                            +Float.parseFloat(durasi)+" detik. " +
+                                            "\nTap Untuk Membuka Aplikasi")
+                                    .setContentTitle("Pemberitahuan Sistem Melakukan Penyiraman")
+                                    .setAutoCancel(true)
+                                    .setSound(defaultSoundUri)
+                                    .setContentIntent(pendingIntent)
+                                    .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
 
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES. O) {
-                            NotificationChannel channel = new NotificationChannel("CH1", "Notifikasi",NotificationManager.IMPORTANCE_DEFAULT);
-                            notificationManager.createNotificationChannel(channel);
+                            NotificationManager notificationManager = (NotificationManager) getActivity().getApplicationContext().
+                                    getSystemService(Context.NOTIFICATION_SERVICE);
+
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES. O) {
+                                NotificationChannel channel = new NotificationChannel("CH1", "Notifikasi",NotificationManager.IMPORTANCE_DEFAULT);
+                                notificationManager.createNotificationChannel(channel);
+                            }
+                            notificationManager.notify(1, notificationBuilder.build());
                         }
-                        notificationManager.notify(1, notificationBuilder.build());
-                    }**/
+                    }
                 }
             }
 

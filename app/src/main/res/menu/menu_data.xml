@@ -10,13 +10,6 @@
         android:orderInCategory="100"/>
 
     <item
-        android:id="@+id/action_excel"
-        android:title="Export to Excel"
-        android:icon="@drawable/ic_donlot"
-        app:showAsAction="withText"
-        android:iconTint="#000"/>
-
-    <item
         android:id="@+id/action_sort"
         android:title="Sort By Date"
         android:icon="@drawable/ic_sort"

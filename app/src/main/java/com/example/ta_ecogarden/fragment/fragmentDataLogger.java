@@ -19,6 +19,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -70,10 +71,12 @@ public class fragmentDataLogger extends Fragment {
     private static final int STORAGE_PERMISSION_CODE = 101;
     ValueEventListener eventListener;
     File file;
+    Button fileExcel;
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_data_logger, container, false);
         setHasOptionsMenu(true);
         checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, STORAGE_PERMISSION_CODE);
@@ -101,14 +104,25 @@ public class fragmentDataLogger extends Fragment {
             }
         };
         databaseReference.addValueEventListener(eventListener);
+
+        fileExcel = view.findViewById(R.id.generateExcel);
+        fileExcel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                generateExcel();
+            }
+        });
+
         return view;
     }
 
     public void checkPermission(String permission, int requestCode) {
-        if (ContextCompat.checkSelfPermission(getActivity().getApplicationContext(), permission) == PackageManager.PERMISSION_DENIED) {
+        if (ContextCompat.checkSelfPermission(getActivity().getApplicationContext(), permission)
+                == PackageManager.PERMISSION_DENIED) {
             requestPermissions(new String[]{permission}, requestCode);
         } else {
-            Toast.makeText(getActivity().getApplicationContext(), "Permission already granted", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity().getApplicationContext(),
+                    "Permission already granted", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -117,9 +131,11 @@ public class fragmentDataLogger extends Fragment {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == STORAGE_PERMISSION_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                Toast.makeText(getActivity().getApplicationContext(), "Storage Permission Granted", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity().getApplicationContext(),
+                        "Storage Permission Granted", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(getActivity().getApplicationContext(), "Storage Permission Denied", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity().getApplicationContext(),
+                        "Storage Permission Denied", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -247,6 +263,7 @@ public class fragmentDataLogger extends Fragment {
         FileOutputStream outputStream = null;
 
         try {
+            // notifikasi ketika file berhasil di download
             outputStream=new FileOutputStream(file);
             wb.write(outputStream);
 
@@ -276,7 +293,6 @@ public class fragmentDataLogger extends Fragment {
 
         } catch (java.io.IOException e) {
             e.printStackTrace();
-
             Toast.makeText(getActivity().getApplicationContext(),"NO OK",Toast.LENGTH_LONG).show();
             try {
                 outputStream.close();
@@ -286,6 +302,7 @@ public class fragmentDataLogger extends Fragment {
         }
     }
 
+    // membuat tanggal dan waktu untuk penamaan file excel
     private String dateFile () {
         DateFormat dateFormat = new SimpleDateFormat("dd MMMM YYYY HH:MM:ss");
         Date date = new Date();
@@ -293,6 +310,7 @@ public class fragmentDataLogger extends Fragment {
         return  datefile;
     }
 
+    // melakukan pencarian data
     private void filter(String data) {
         List<getData> list = new ArrayList<>();
         for (getData s : dataFirebaseList) {
@@ -303,6 +321,7 @@ public class fragmentDataLogger extends Fragment {
         adapter.filterlist(list);
     }
 
+    // fitur pencarian
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         menu.clear();
@@ -324,12 +343,10 @@ public class fragmentDataLogger extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+    // fitur untuk mengurutkan list berdasarkan tanggal
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_excel:
-                generateExcel();
-                break;
             case R.id.action_sort:
                 break;
             case R.id.action_sort_ascending:

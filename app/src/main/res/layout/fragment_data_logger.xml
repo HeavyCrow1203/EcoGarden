@@ -7,11 +7,19 @@
     android:layout_margin="10dp"
     android:orientation="vertical">
 
+    <Button
+        android:id="@+id/generateExcel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/ic_donlot"
+        android:text="eksport .xls"
+        android:backgroundTint="#E91E63"
+        android:layout_marginBottom="10dp"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list_data_2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
         android:scrollbars="vertical"
         tools:ignore="MissingConstraints" />
 
