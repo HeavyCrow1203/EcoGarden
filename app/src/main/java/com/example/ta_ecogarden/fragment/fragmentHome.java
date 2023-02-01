@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +52,8 @@ public class fragmentHome extends Fragment {
     ArcProgress gTemp, gSoil;
     Button button1;
     DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+    Boolean checkBackground;
+
 
     @Nullable
     @Override
@@ -166,13 +169,10 @@ public class fragmentHome extends Fragment {
 
                     output.setText(keterangan +" ("+durasi+" detik)");
 
-                    ActivityManager am = (ActivityManager) getActivity().getSystemService(Context.ACTIVITY_SERVICE);
-
-                    List<ActivityManager.RunningTaskInfo> taskInfos = am.getRunningTasks(1);
-                    ComponentName componentInfo = taskInfos.get(0).topActivity;
-                    if (componentInfo.getPackageName().equalsIgnoreCase(getActivity().getApplicationContext().getPackageName())) {
-                        return;
-                    } else {
+                    ActivityManager.RunningAppProcessInfo prosesInfo = new ActivityManager.RunningAppProcessInfo();
+                    ActivityManager.getMyMemoryState(prosesInfo);
+                    checkBackground = prosesInfo.importance != ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND;
+                    if (checkBackground) {
                         if (Float.parseFloat(durasi) >= 1.00) {
                             Intent intent = new Intent(getActivity().getApplicationContext(), MainActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -198,11 +198,14 @@ public class fragmentHome extends Fragment {
                                     getSystemService(Context.NOTIFICATION_SERVICE);
 
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES. O) {
-                                NotificationChannel channel = new NotificationChannel("CH1", "Notifikasi",NotificationManager.IMPORTANCE_DEFAULT);
+                                NotificationChannel channel = new NotificationChannel("CH1",
+                                        "Notifikasi",NotificationManager.IMPORTANCE_DEFAULT);
                                 notificationManager.createNotificationChannel(channel);
                             }
                             notificationManager.notify(1, notificationBuilder.build());
                         }
+                    } else {
+                        Log.d("EcoGarden","Aplikasi sedang berjalan di latar depan");
                     }
                 }
             }
